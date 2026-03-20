@@ -1,7 +1,6 @@
 folder_path = 'D:\\work\\my_work\\Second_year\\Second Semester\\Image Processing\\Photos'
 
 import cv2
-import numpy as np
 import matplotlib.pyplot as plt
 import os
 
@@ -36,21 +35,44 @@ def DetectingHouseArea(img):
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
     img = cv2.medianBlur(img, 3)
-    Frame = cv2.inRange(img, 14, 23)
+    Frame = cv2.inRange(img, 14, 25)
 
 
     lines = cv2.HoughLinesP(
     Frame,
     1,              #Distance resolution in pixels
-    np.pi / 90,  #Angle resolution in radians
-    50,      #Min. number of intersecting points to detect a line   #Vector to return start and end points of the lines indicated by [x1, y1, x2, y2] 
-    6,   #Line segments shorter than this are rejected
-    0       #Max gap allowed between points on the same line
+    np.pi / 80,  #Angle resolution in radians
+    61,      #Min. number of intersecting points to detect a line   #Vector to return start and end points of the lines indicated by [x1, y1, x2, y2] 
+    0,   #Line segments shorter than this are rejected
+    28       #Max gap allowed between points on the same line
     )
 
+    left = 1000 #X axis 0 is on the left
+    right = 0
+    top = 1000 #Y axis 0 at the top
+    bottom = 0
+
     for line in lines:
-        cv2.line(img, (line[0][0], line[0][1]), (line[0][2],line[0][3]), (255,255,255), 10)
-        print(line)
+
+        if line[0][0] < left : #looking for left
+            left = line[0][0]
+        
+        if line[0][1] < top: #looking for top
+            top = line[0][1]
+
+        if line[0][2] > right : #looking for right
+            right = line[0][2]
+
+        if line[0][3] > bottom : #looking for bottom
+            bottom = line[0][3]
+
+        # print(line)
+        # cv2.line(img, (line[0][0], line[0][1]), (line[0][2],line[0][3]), (255,255,255), 10)
+
+    cv2.line(img, (left, top), (right, top), (255,255,255), 3)
+    cv2.line(img, (left, bottom), (right,bottom), (255,255,255), 3)
+    cv2.line(img, (left, top), (left,bottom), (255,255,255), 3)
+    cv2.line(img, (right, top), (right,bottom), (255,255,255), 3)
 
     plt.subplot(2,3,5)
     plt.imshow(Frame, "gray")
@@ -58,6 +80,7 @@ def DetectingHouseArea(img):
     plt.subplot(2,3,4)
     plt.imshow(img)
     plt.show()
+
 
 def LaneDetect(img):
     img_path = os.path.join(folder_path, img)
@@ -68,16 +91,16 @@ def LaneDetect(img):
     canny_blur = cv2.Canny(Gaussian, 50, 150)
     canny_raw = cv2.Canny(img, 50, 150)
 
-    lines = cv2.HoughLines(
+    lines = cv2.HoughLinesP(
     canny_blur,
     1,              #Distance resolution in pixels
     np.pi / 45,  #Angle resolution in radians
-    100,      #Min. number of intersecting points to detect a line   #Vector to return start and end points of the lines indicated by [x1, y1, x2, y2] 
-    100,   #Line segments shorter than this are rejected
-    50       #Max gap allowed between points on the same line
+    200,      #Min. number of intersecting points to detect a line   #Vector to return start and end points of the lines indicated by [x1, y1, x2, y2] 
+    500,   #Line segments shorter than this are rejected
+    10       #Max gap allowed between points on the same line
     )
 
-    k=3000
+    k=30
 
     for curLine in lines:
         rho, theta = curLine[0]
