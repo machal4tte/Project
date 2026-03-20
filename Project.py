@@ -1,6 +1,7 @@
 folder_path = 'D:\\work\\my_work\\Second_year\\Second Semester\\Image Processing\\Photos'
 
 import cv2
+import numpy as np
 import matplotlib.pyplot as plt
 import os
 
