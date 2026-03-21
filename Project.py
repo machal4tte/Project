@@ -86,19 +86,25 @@ def LaneDetect(img):
     img = cv2.cvtColor(img, cv2.COLOR_XYZ2RGB)
     img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
 
-    Gaussian = cv2.GaussianBlur(img, (9,9), 0)
-    _, Road = cv2.threshold(img, 140, 250, cv2.THRESH_BINARY)
-    _, black = cv2.threshold(img ,0, 0, cv2.THRESH_BINARY)
-    canny_blur = cv2.Canny(Road, 0, 150)
-    # canny_raw = cv2.Canny(img, 50, 150)
+
+    height, width = img.shape
+    print(img.shape)
+    black = np.zeros_like(img)
+    triangle = np.array([[(width//2, 80), (0, height-20) , (width, height-20)]]) 
+    triangle_img = cv2.fillPoly(black, triangle, 255) 
+    ROI = cv2.bitwise_and(triangle_img, img)
+
+    print(triangle)
+    
+    Lane = cv2.inRange(ROI, 160, 255)
 
     lines = cv2.HoughLinesP(
-    Road,
+    Lane,
     1,              #Distance resolution in pixels
-    np.pi / 45,  #Angle resolution in radians
-    100,      #Min. number of intersecting points to detect a line   #Vector to return start and end points of the lines indicated by [x1, y1, x2, y2] 
-    120,   #Line segments shorter than this are rejected
-    50       #Max gap allowed between points on the same line
+    np.pi / 180,  #Angle resolution in radians
+    50,      #Min. number of intersecting points to detect a line   #Vector to return start and end points of the lines indicated by [x1, y1, x2, y2] 
+    30,   #Line segments shorter than this are rejected
+    10       #Max gap allowed between points on the same line
     )
 
     try:
@@ -111,13 +117,13 @@ def LaneDetect(img):
 
     plt.figure(figsize=(10,5))
     plt.subplot(2,3,1)
-    plt.imshow(img, "gray")
+    plt.imshow(ROI, "gray")
 
     plt.subplot(2,3,2)
-    plt.imshow(Road)
+    plt.imshow(img)
 
     plt.subplot(2,3,3)
-    plt.imshow(black, "gray")
+    plt.imshow(Lane, "gray")
 
     plt.show()
 
