@@ -132,7 +132,21 @@ def NoiseReduction(img):
     img_path = os.path.join(folder_path, img)
     img = cv2.imread(img_path)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    L,Y,B = cv2.split(img)
+
+    gaussian = cv2.GaussianBlur(img, (3,3), 0)
+    bilateral = cv2.bilateralFilter(gaussian, 9, 50, 75)
+
+    plt.figure(figsize=(10,5))
+
+    plt.subplot(1,3,1)
+    plt.imshow(img)
+
+    plt.subplot(1,3,2)
+    plt.imshow(gaussian)
+
+    plt.subplot(1,3,2)
+    plt.imshow(bilateral)
+    plt.show()
 
 
 def ImageEnhancement(img):
@@ -141,10 +155,16 @@ def ImageEnhancement(img):
     img = cv2.cvtColor(img, cv2.COLOR_BGR2LAB)
     L,A,B = cv2.split(img)
 
-    clahe = cv2.createCLAHE(clipLimit=1.5, tileGridSize=(8,8)) 
-    cl = clahe.apply(L)
+    gamma = 0.7 
+    gamma_img = np.power(L / 255.0, gamma)
+    gamma_img = (gamma_img * 255).astype(np.uint8)
+
+    clahe = cv2.createCLAHE(clipLimit=2, tileGridSize=(8,8))
+
+    cl = clahe.apply(gamma_img)
 
     HDR = cv2.merge((cl, A, B))
+
 
     HDR = cv2.cvtColor(HDR, cv2.COLOR_LAB2BGR)
     HDR = cv2.cvtColor(HDR, cv2.COLOR_BGR2RGB)
@@ -156,6 +176,9 @@ def ImageEnhancement(img):
     plt.subplot(2,3,1)
     plt.imshow(img)
 
+    plt.subplot(2,3,2)
+    plt.imshow(gamma_img)
+
     plt.subplot(2,3,3)
     plt.imshow(HDR)
 
@@ -165,5 +188,6 @@ def ImageEnhancement(img):
 # FindCentroid('Q1_Mas01.JPG')
 # DetectingHouseArea("Question 2.jpg")
 # LaneDetect("Question 3.jpg")
-ImageEnhancement("Question 5.jpg")
+NoiseReduction("Question 4.jpg")
+# ImageEnhancement("Question 5.jpg")
 
