@@ -93,28 +93,28 @@ def LaneDetect(img):
     # canny_raw = cv2.Canny(img, 50, 150)
 
     lines = cv2.HoughLinesP(
-    canny_blur,
+    Road,
     1,              #Distance resolution in pixels
-    np.pi / 180,  #Angle resolution in radians
-    10,      #Min. number of intersecting points to detect a line   #Vector to return start and end points of the lines indicated by [x1, y1, x2, y2] 
-    0,   #Line segments shorter than this are rejected
-    2       #Max gap allowed between points on the same line
+    np.pi / 45,  #Angle resolution in radians
+    100,      #Min. number of intersecting points to detect a line   #Vector to return start and end points of the lines indicated by [x1, y1, x2, y2] 
+    120,   #Line segments shorter than this are rejected
+    50       #Max gap allowed between points on the same line
     )
 
     try:
         for line in lines:
             if line[0][1] > 78 or line[0][3] > 78 :
-                cv2.line(black, (line[0][0], line[0][1]), (line[0][2],line[0][3]), (255,255,255), 1)
+                cv2.line(img, (line[0][0], line[0][1]), (line[0][2],line[0][3]), (0,0,0), 10)
 
     except TypeError:
         print(TypeError)
 
     plt.figure(figsize=(10,5))
     plt.subplot(2,3,1)
-    plt.imshow(Road, "gray")
+    plt.imshow(img, "gray")
 
     plt.subplot(2,3,2)
-    plt.imshow(canny_blur)
+    plt.imshow(Road)
 
     plt.subplot(2,3,3)
     plt.imshow(black, "gray")
@@ -158,6 +158,6 @@ def ImageEnhancement(img):
 
 # FindCentroid('Q1_Mas01.JPG')
 # DetectingHouseArea("Question 2.jpg")
-# LaneDetect("Question 3.jpg")
-ImageEnhancement("Question 5.jpg")
+LaneDetect("Question 3.jpg")
+# ImageEnhancement("Question 5.jpg")
 
